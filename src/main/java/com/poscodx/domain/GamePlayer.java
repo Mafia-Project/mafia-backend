@@ -15,6 +15,10 @@ public class GamePlayer {
         this.host = host;
     }
 
+    public void die(){
+        this.killed = true;
+    }
+
     public void setJob(JobType job){
         this.job = job;
     }

@@ -3,6 +3,7 @@ package com.poscodx.utils;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MapUtils {
@@ -14,7 +15,7 @@ public class MapUtils {
                         Field::getName,
                         field -> {
                             try {
-                                return field.get(obj);
+                                return Objects.isNull(field.get(obj)) ? "null" : field.get(obj);
                             } catch (IllegalAccessException e) {
                                 throw new RuntimeException(e);
                             }
