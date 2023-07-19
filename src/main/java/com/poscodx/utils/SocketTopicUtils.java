@@ -7,6 +7,6 @@ public class SocketTopicUtils {
     }
 
     public static String getChatTopic(String roomId){
-        return String.format("sub/chat/rooms/%s", roomId);
+        return String.format("/sub/chat/rooms/%s", roomId);
     }
 }
