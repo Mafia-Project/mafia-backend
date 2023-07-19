@@ -40,4 +40,13 @@ public class GamePlayer {
         return Objects.hash(nickname, job, killed, host);
     }
 
+    @Override
+    public String toString() {
+        return "GamePlayer{" +
+                "nickname='" + nickname + '\'' +
+                ", job=" + job +
+                ", killed=" + killed +
+                ", host=" + host +
+                '}';
+    }
 }

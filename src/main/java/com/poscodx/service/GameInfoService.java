@@ -19,11 +19,12 @@ public class GameInfoService {
 
     private final GameInfo gameInfo;
 
-    public void addGame(GamePlayer host, boolean isPsychopathAllowed, boolean isReporterAllowed, int maximumPlayer){
-        String roomKey = UUID.randomUUID().toString();
+    public String addGame(GamePlayer host, boolean isPsychopathAllowed, boolean isReporterAllowed, int maximumPlayer){
+//        String roomKey = UUID.randomUUID().toString();
+        String roomKey = "posco";
         List<GamePlayer> playerList = new ArrayList<GamePlayer>();
         playerList.add(host);
-        gameInfo.addGame(new Game(roomKey, isPsychopathAllowed, isReporterAllowed, maximumPlayer, playerList));
+        return gameInfo.addGame(new Game(roomKey, isPsychopathAllowed, isReporterAllowed, maximumPlayer, playerList));
     }
 
     public void removeGame(Game game){
