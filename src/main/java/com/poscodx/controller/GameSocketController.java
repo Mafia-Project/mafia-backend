@@ -1,23 +1,19 @@
 package com.poscodx.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.poscodx.service.GameService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
+@RequiredArgsConstructor
 public class GameSocketController {
 
-    private final SimpMessagingTemplate simpMessagingTemplate;
-
-    @Autowired
-    public GameSocketController(SimpMessagingTemplate simpMessagingTemplate) {
-        this.simpMessagingTemplate = simpMessagingTemplate;
-    }
+    private final GameService gameService;
 
     @MessageMapping("/rooms/{id}/games")
     public void send(@DestinationVariable String id, String message) {
-        simpMessagingTemplate.convertAndSend("/sub/rooms/" +id, message);
+        gameService.testMessage(id, message);
     }
 }
