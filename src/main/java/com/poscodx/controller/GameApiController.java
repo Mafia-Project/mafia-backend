@@ -39,7 +39,11 @@ public class GameApiController {
         }
         game.allocateJob();
 
-        for
+        for(GamePlayer gamePlayer : game.getGamePlayers()){
+            System.out.println(gamePlayer);
+        }
+
+
         return ResponseEntity.ok().build();
     }
 

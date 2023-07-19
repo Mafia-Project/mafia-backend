@@ -72,10 +72,17 @@ public class Game {
 
         for(int i = 0; i < mafiaNum; i++) jobs.add(JobType.MAFIA);
         if(isPsychopathAllowed) jobs.add(JobType.PSYCHOPATH);
-        if(isPsychopathAllowed) jobs.add(JobType.REPORTER);
+        if(isReporterAllowed) jobs.add(JobType.REPORTER);
         jobs.add(JobType.POLICE);
         jobs.add(JobType.DOCTOR);
+        System.out.println("Jobs Length: "+ jobs.size());
+        System.out.println("playerList.size(): "+ playerList.size());
+        int citizenNum = playerList.size() - jobs.size();
+        for(int i = 0; i < citizenNum; i++){
+            jobs.add(JobType.CITIZEN);
+        }
 
+        System.out.println("Jobs Length: "+ jobs.size());
         for(int i = 0; i < jobs.size(); i++){
             playerList.get(i).setJob(jobs.get(i));
         }

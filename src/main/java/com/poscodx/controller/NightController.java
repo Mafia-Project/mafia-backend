@@ -25,36 +25,36 @@ public class NightController {
     private final GameInfoService gameInfoService;
     @MessageMapping("/rooms/{roomKey}/night-mafia")
     public void nightMafia(@DestinationVariable String roomKey, NightEventRequest request) {
-//        Game game = gameInfoService.getGame(roomKey);
-//        game.writeNightSummary(JobType.MAFIA, request.getNickname());
-        String message = request.getNickname() + "님을 지목하였습니다";
+        Game game = gameInfoService.getGame(roomKey);
+        game.writeNightSummary(JobType.MAFIA, request.getTarget());
+        String message = request.getTarget() + "님을 지목하였습니다";
         nightService.sendChoiceMessage(roomKey, message, JobType.MAFIA);
     }
 
     @MessageMapping("/rooms/{roomKey}/night-police")
     public void nightPolice(@DestinationVariable String roomKey, NightEventRequest request) {
-//        Game game = gameInfoService.getGame(roomKey);
-//        GamePlayer target = game.findGamePlayerByNickname(request.getTarget());
-//        JobType targetJob = target.getJob();
-//        String message = target.getNickname() + "님은 " + targetJob + " 입니다";
-        String message = "김희아" + "님은 " + " 마피아" + " 입니다";
+        Game game = gameInfoService.getGame(roomKey);
+        GamePlayer target = game.findGamePlayerByNickname(request.getTarget());
+        JobType targetJob = target.getJob();
+        String message = target.getNickname() + "님은 " + targetJob + " 입니다";
+//        String message = "김희아" + "님은 " + " 마피아" + " 입니다";
         nightService.sendChoiceMessage(roomKey, message, JobType.POLICE);
     }
 
     @MessageMapping("/rooms/{roomKey}/night-doctor")
     public void nightDoctor(@DestinationVariable String roomKey, NightEventRequest request) {
-//        Game game = gameInfoService.getGame(roomKey);
-//        game.writeNightSummary(JobType.DOCTOR, request.getNickname());
-//        String message = game.findGamePlayerByNickname(request.getNickname()).getNickname() + "님을 지목하였습니다";
-        String message = request.getNickname() + "님을 지목하였습니다";
+        Game game = gameInfoService.getGame(roomKey);
+        game.writeNightSummary(JobType.DOCTOR, request.getTarget());
+        String message = request.getTarget() + "님을 지목하였습니다";
+//        String message = request.getNickname() + "님을 지목하였습니다";
         nightService.sendChoiceMessage(roomKey, message, JobType.DOCTOR);
     }
 
     @MessageMapping("/rooms/{roomKey}/night-reporter")
     public void nightReporter(@DestinationVariable String roomKey, NightEventRequest request) {
-//        Game game = gameInfoService.getGame(roomKey);
-//        game.writeNightSummary(JobType.REPORTER, request.getNickname());
-        String message = request.getNickname() + "님을 지목하였습니다. 다음날에 타겟의 직업이 모두에게 공개됩니다.";
+        Game game = gameInfoService.getGame(roomKey);
+        game.writeNightSummary(JobType.REPORTER, request.getTarget());
+        String message = request.getTarget() + "님을 지목하였습니다. 다음날에 타겟의 직업이 모두에게 공개됩니다.";
         nightService.sendChoiceMessage(roomKey, message, JobType.REPORTER);
     }
 
@@ -70,13 +70,21 @@ public class NightController {
 
         Map<JobType, String> nightSummary = game.getNightSummary();
 
+        System.out.println(nightSummary);
+
+        /*
+        * TODO
+        *  nightSummary에서 찾으려고 하는 값이 없을 경우, 처리를 해줘야 할 필요가 있음
+        *  내일 ㅋㅋ
+        * */
+
         if(nightSummary.get(JobType.DOCTOR).equals(nightSummary.get(JobType.MAFIA))){
             String message = nightSummary.get(JobType.DOCTOR) + "님이 의사에 의해서 살아났습니다!!";
             nightService.sendNightEndMessage(roomKey, message);
 
         }else{
             GamePlayer player = game.findGamePlayerByNickname(nightSummary.get(JobType.MAFIA));
-            player.setIsHost(true);
+            player.setIsKilled(true);
 
             String message = nightSummary.get(JobType.MAFIA) + "님이 마피아에 의해 살해당했습니다!";
             nightService.sendNightEndMessage(roomKey, message);
@@ -103,12 +111,15 @@ public class NightController {
         if(aliveMafia >= aliveCitizen){
             String endMessage = "마피아팀이 승리하였습니다.";
             nightService.sendNightEndGameOverMessage(roomKey, endMessage);
-            /*
-            * TODO
-            *  결과창 보내주기
-            * */
         }
         game.clearNightSummary();
+
+
+        for(GamePlayer gamePlayer : game.getPlayerList()){
+            System.out.println(gamePlayer);
+        }
+        System.out.println(aliveMafia + " " + aliveCitizen);
+        System.out.println(nightSummary);
 
     }
 
