@@ -1,15 +1,11 @@
 package com.poscodx.controller;
 
+import com.poscodx.dto.CreateRoomRequest;
 import com.poscodx.dto.TimeReductionRequest;
 import com.poscodx.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -17,6 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameApiController {
 
     private final GameService gameService;
+
+    @PostMapping("/createRoom")
+    public ResponseEntity<Void> createRoom(@RequestBody CreateRoomRequest request) {
+        System.out.println(request);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/rooms/{id}/games/time-reduction")
     public ResponseEntity<Void> timeReduction(@PathVariable String id, @RequestBody TimeReductionRequest request) {
