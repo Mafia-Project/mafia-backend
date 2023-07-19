@@ -14,6 +14,5 @@ public class GameSocketController {
 
     @MessageMapping("/rooms/{id}/games")
     public void send(@DestinationVariable String id, String message) {
-        gameService.testMessage(id, message);
     }
 }
