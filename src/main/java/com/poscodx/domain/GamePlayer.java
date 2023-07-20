@@ -1,14 +1,16 @@
 package com.poscodx.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import java.util.Objects;
 
 @Getter
+@AllArgsConstructor
 public class GamePlayer {
     private String nickname;
     private JobType job;
-    private boolean killed;
-    private boolean host;
+    private Boolean killed;
+    private Boolean host;
 
     public GamePlayer(String nickname, boolean host){
         this.nickname = nickname;

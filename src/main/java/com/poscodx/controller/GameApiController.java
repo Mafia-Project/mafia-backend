@@ -33,17 +33,7 @@ public class GameApiController {
         System.out.println(request);
         GamePlayer host = new GamePlayer(request.getNickname(), true);
         String id = gameInfoService.addGame(host, request.getUsePsychopath(), request.getUseReporter(), request.getPlayerNum());
-        Game game = gameInfoService.getGame(id);
-        for(int i = 1; i < game.getMaximumPlayer()+1; i++){
-            game.addGamePlayer(new GamePlayer("player" + i, false));
-        }
-        game.allocateJob();
-
-        for(GamePlayer gamePlayer : game.getGamePlayers()){
-            System.out.println(gamePlayer);
-        }
-
-
+        System.out.println();
         return ResponseEntity.ok().build();
     }
 

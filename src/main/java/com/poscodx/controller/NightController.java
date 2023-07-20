@@ -102,7 +102,7 @@ public class NightController {
         int aliveMafia = 0;
         int aliveCitizen = 0;
         for(GamePlayer gamePlayer : playerList){
-            if(!gamePlayer.isKilled()){
+            if(!gamePlayer.getKilled()){
                 if(gamePlayer.getJob().equals(JobType.MAFIA)) aliveMafia+= 1;
                 else aliveCitizen += 1;
             }
