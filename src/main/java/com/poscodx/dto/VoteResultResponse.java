@@ -11,13 +11,12 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class VoteResultResponse {
-    public String target;
     public String message;
     public GameMessageType type;
 
     public static VoteResultResponse of(String target) {
         String message = Objects.isNull(target) ? "투표결과 아무일도 일어나지 않았습니다." :
                 String.format("%s님이 투표결과 죽었습니다.", target);
-        return new VoteResultResponse(target, message, VOTE);
+        return new VoteResultResponse(message, VOTE);
     }
 }

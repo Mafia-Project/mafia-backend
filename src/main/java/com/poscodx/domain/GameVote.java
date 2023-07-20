@@ -36,18 +36,19 @@ public class GameVote {
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .collect(Collectors.toList());
 
-        if (sortedBallotBox.isEmpty() || verifyVoteResult(sortedBallotBox.size() > 1,
-                sortedBallotBox.get(0).getValue().equals(sortedBallotBox.get(1).getValue()))) {
-            return null;
-        }
-        return sortedBallotBox.get(0).getKey();
+        return verifyVoteResult(sortedBallotBox) ? null : sortedBallotBox.get(0).getKey();
     }
 
-    private static boolean verifyVoteResult(boolean sortedBallotBox, boolean sortedBallotBox1) {
-        return sortedBallotBox && sortedBallotBox1;
+    private boolean verifyVoteResult(List<Entry<String, Integer>> sortedBallotBox) {
+        return sortedBallotBox.isEmpty() || sortedBallotBox.size() > 1 &&
+                sameNumberOfVotes(sortedBallotBox.get(0).getValue(), sortedBallotBox.get(1).getValue());
+    }
+
+    private boolean sameNumberOfVotes(Integer maximumNum1, Integer maximumNum2){
+        return Objects.equals(maximumNum1, maximumNum2);
     }
 
     private boolean hasDuplicateVote(String previousTarget, String currentTarget){
-        return verifyVoteResult(Objects.nonNull(previousTarget), previousTarget.equals(currentTarget));
+        return Objects.nonNull(previousTarget) && previousTarget.equals(currentTarget);
     }
 }
