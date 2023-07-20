@@ -48,18 +48,18 @@ public class GameApiController {
         Game game = gameInfoService.getGame(roomKey);
         if(Objects.isNull(game)) {
             result.put("result", "INVALID");
-            return ResponseEntity.badRequest().body(result);
+            return ResponseEntity.ok().body(result);
         }
 
         List<GamePlayer> gamePlayerList = game.getPlayerList();
         if(game.getMaximumPlayer() <= gamePlayerList.size()){
             result.put("result", "EXCEEDED");
-            return ResponseEntity.badRequest().body(result);
+            return ResponseEntity.ok().body(result);
         }
 
         if(!game.checkDuplicateNickname(request.getNickname())) {
             result.put("result", "NICKNAME");
-            return ResponseEntity.badRequest().body(result);
+            return ResponseEntity.ok().body(result);
         }
 
         result.put("result","OK");
