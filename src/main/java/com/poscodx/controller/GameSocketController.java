@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
@@ -18,8 +20,8 @@ public class GameSocketController {
 
     private final GameInfoService gameInfoService;
 
-    @MessageMapping("/rooms/{roomKey}/join-game")
-    public void send(@DestinationVariable String roomKey, JoinRequest joinRequest) {
+    @PostMapping("/rooms/{roomKey}/join-game")
+    public void send(@PathVariable String roomKey, JoinRequest joinRequest) {
         System.out.println("Join game method");
         Game game = gameInfoService.getGame(roomKey);
         game.addGamePlayer(new GamePlayer(joinRequest.getNickname(), false));
@@ -29,8 +31,8 @@ public class GameSocketController {
         }
     }
 
-    @MessageMapping("/rooms/{roomKey}/start-game")
-    public void startGame(@DestinationVariable String roomKey) {
+    @PostMapping("/rooms/{roomKey}/start-game")
+    public void startGame(@PathVariable String roomKey) {
         Game game = gameInfoService.getGame(roomKey);
         game.allocateJob();
         List<GamePlayer> playerList = game.getGamePlayers();
