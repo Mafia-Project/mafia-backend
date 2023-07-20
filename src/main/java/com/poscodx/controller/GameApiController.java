@@ -42,7 +42,7 @@ public class GameApiController {
     }
 
     @PostMapping("/joinRoom/{roomKey}")
-    public ResponseEntity<Map<String,String>> joinRoom(@PathVariable String roomKey,@RequestBody JoinRequest request) {
+    public ResponseEntity<Map<String,String>> validateJoinRoom(@PathVariable String roomKey,@RequestBody JoinRequest request) {
         Map<String, String> result = new HashMap<>();
         GamePlayer user = new GamePlayer(request.getNickname(), true);
         Game game = gameInfoService.getGame(roomKey);
