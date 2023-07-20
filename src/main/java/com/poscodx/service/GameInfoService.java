@@ -18,14 +18,18 @@ import java.util.*;
 @Getter
 @AllArgsConstructor
 @Service
+
 public class GameInfoService {
 
     private final GameInfo gameInfo;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     public String addGame(GamePlayer host, boolean isPsychopathAllowed, boolean isReporterAllowed, int maximumPlayer){
-//        String roomKey = UUID.randomUUID().toString();
-        String roomKey = "posco";
+        String roomKey = UUID.randomUUID().toString().substring(0,5);
+        while(!gameInfo.checkDuplicate(roomKey)){
+            roomKey = UUID.randomUUID().toString().substring(0,5);
+            System.out.println(roomKey);
+        }
         List<GamePlayer> playerList = new ArrayList<GamePlayer>();
         playerList.add(host);
         return gameInfo.addGame(new Game(roomKey, isPsychopathAllowed, isReporterAllowed, maximumPlayer, playerList));

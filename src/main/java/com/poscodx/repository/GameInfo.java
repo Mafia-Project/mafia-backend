@@ -14,4 +14,6 @@ public interface GameInfo {
     //유저 추가하기
     Game getGame(String roomKey);
 
+    boolean checkDuplicate(String roomKey);
+
 }

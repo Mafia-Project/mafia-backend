@@ -26,5 +26,11 @@ public class GameInfoMemoryImp implements GameInfo{
         return store.get(roomKey);
     }
 
+    @Override
+    public boolean checkDuplicate(String roomKey) {
+        Set roomKeySet = store.keySet();
+        return !roomKeySet.contains(roomKey);
+    }
+
 
 }

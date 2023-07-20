@@ -88,4 +88,11 @@ public class Game {
         }
 
     }
+
+    public boolean checkDuplicateNickname(String nickname){
+        for(GamePlayer gamePlayer : playerList){
+            if (gamePlayer.getNickname().equals(nickname)) return false;
+        }
+        return true;
+    }
 }
