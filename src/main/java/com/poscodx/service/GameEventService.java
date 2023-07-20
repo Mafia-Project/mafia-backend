@@ -23,12 +23,12 @@ public class GameEventService {
 
     //살인 이벤트 메시지
     // response : 유저의 최신정보
-    public void playerDeadEvent(String roomKey, String targetName){
-        Game game = gameInfoService.getGame(roomKey);
-        GamePlayer target = game.findGamePlayerByNickname(targetName);
-        target.die();
-        gameInfoService.sendUsers(roomKey);
-    }
+//    public void playerDeadEvent(String roomKey, String targetName){
+//        Game game = gameInfoService.getGame(roomKey);
+//        GamePlayer target = game.findGamePlayerByNickname(targetName);
+//        target.die();
+//        gameInfoService.sendUsers(roomKey);
+//    }
 
 
     //채팅방 메시지

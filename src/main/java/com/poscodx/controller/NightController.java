@@ -60,29 +60,19 @@ public class NightController {
 
     @MessageMapping("/rooms/{roomKey}/night-end")
     public void nightEnd(@DestinationVariable String roomKey) {
-        /*
-        * TODO
-        *  게임 끝나는 유무 계속 파악.
-        * */
         Game game = gameInfoService.getGame(roomKey);
         List<GamePlayer> playerList = game.getPlayerList();
-
-
         Map<JobType, String> nightSummary = game.getNightSummary();
-
         System.out.println(nightSummary);
 
-        /*
-        * TODO
-        *  nightSummary에서 찾으려고 하는 값이 없을 경우, 처리를 해줘야 할 필요가 있음
-        *  내일 ㅋㅋ
-        * */
 
-        if(nightSummary.get(JobType.DOCTOR).equals(nightSummary.get(JobType.MAFIA))){
+        if(Objects.nonNull(nightSummary.get(JobType.DOCTOR)) &&
+            Objects.nonNull(nightSummary.get(JobType.MAFIA))&&
+           nightSummary.get(JobType.DOCTOR).equals(nightSummary.get(JobType.MAFIA))){
             String message = nightSummary.get(JobType.DOCTOR) + "님이 의사에 의해서 살아났습니다!!";
             nightService.sendNightEndMessage(roomKey, message);
 
-        }else{
+        }else if(Objects.nonNull(nightSummary.get(JobType.MAFIA))) {
             GamePlayer player = game.findGamePlayerByNickname(nightSummary.get(JobType.MAFIA));
             player.setIsKilled(true);
 
@@ -96,6 +86,8 @@ public class NightController {
             String reporterMessage = targetNickname + "님이"+ targetJob.toString() +" (이)라는 기사가 특보로 실렸습니다!";
             nightService.sendNightEndMessage(roomKey, reporterMessage);
         }
+
+        gameInfoService.sendUsers(roomKey, GameMessageType.NIGHT_END);
 
 
         //Game Over 유무 파악

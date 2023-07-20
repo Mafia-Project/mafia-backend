@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +18,8 @@ public class UserInfoResponse {
     List<GamePlayer> playerInfo;
     GameMessageType messageType;
 
-    public static UserInfoResponse of(List<GamePlayer> playerInfo){
-        return new UserInfoResponse(playerInfo, USER_INFO);
+    public static UserInfoResponse of(List<GamePlayer> playerInfo, GameMessageType type){
+        return new UserInfoResponse(playerInfo, type);
     }
 
 }

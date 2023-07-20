@@ -9,7 +9,7 @@ import java.util.Objects;
 public class GamePlayer {
     private String nickname;
     private JobType job;
-    private Boolean killed;
+    private Boolean killed = false;
     private Boolean host;
 
     public GamePlayer(String nickname, boolean host){

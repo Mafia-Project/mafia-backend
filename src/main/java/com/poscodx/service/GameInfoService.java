@@ -2,6 +2,7 @@ package com.poscodx.service;
 
 
 import com.poscodx.domain.Game;
+import com.poscodx.domain.GameMessageType;
 import com.poscodx.domain.GamePlayer;
 import com.poscodx.dto.UserInfoResponse;
 import com.poscodx.repository.GameInfo;
@@ -43,7 +44,7 @@ public class GameInfoService {
         return gameInfo.getGame(roomKey);
     }
 
-    public void sendUsers(String roomKey){
+    public void sendUsers(String roomKey, GameMessageType messageType){
         System.out.println("in Send User");
         Game game = getGame(roomKey);
         List<GamePlayer> gamePlayerList = game.getPlayerList();
@@ -52,7 +53,7 @@ public class GameInfoService {
         for(GamePlayer gamePlayer : gamePlayerList){
             System.out.println(gamePlayer);
         }
-        var response = UserInfoResponse.of(gamePlayerList);
+        var response = UserInfoResponse.of(gamePlayerList, messageType);
         System.out.println("getResponse");
 
 

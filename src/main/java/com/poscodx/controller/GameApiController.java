@@ -1,5 +1,4 @@
 package com.poscodx.controller;
-
 import com.poscodx.domain.Game;
 import com.poscodx.domain.GamePlayer;
 import com.poscodx.dto.CreateRoomRequest;
@@ -9,11 +8,7 @@ import com.poscodx.service.GameInfoService;
 import com.poscodx.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import com.poscodx.dto.VoteRequest;
-import com.poscodx.service.GameService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-//@RequestMapping("/api/v1")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class GameApiController {
 
@@ -57,7 +52,6 @@ public class GameApiController {
         }
 
         List<GamePlayer> gamePlayerList = game.getPlayerList();
-        System.out.println(game)
         if(game.getMaximumPlayer() <= gamePlayerList.size()){
             result.put("result", "EXCEEDED");
             return ResponseEntity.badRequest().body(result);
@@ -71,6 +65,10 @@ public class GameApiController {
         result.put("result","OK");
         return ResponseEntity.ok().body(result);
     }
+
+
+
+
 
     @PostMapping("/rooms/{id}/games/time-reduction")
     public ResponseEntity<Void> timeReduction(@PathVariable String id, @RequestBody TimeReductionRequest request) {

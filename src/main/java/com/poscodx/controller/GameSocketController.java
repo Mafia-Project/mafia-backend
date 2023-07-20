@@ -1,10 +1,10 @@
 package com.poscodx.controller;
 
 import com.poscodx.domain.Game;
+import com.poscodx.domain.GameMessageType;
 import com.poscodx.domain.GamePlayer;
 import com.poscodx.dto.JoinRequest;
 import com.poscodx.service.GameInfoService;
-import com.poscodx.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -23,11 +23,22 @@ public class GameSocketController {
         System.out.println("Join game method");
         Game game = gameInfoService.getGame(roomKey);
         game.addGamePlayer(new GamePlayer(joinRequest.getNickname(), false));
-        List<GamePlayer> gamePlayerList = game.getPlayerList();
-
-        gameInfoService.sendUsers(roomKey);
+        gameInfoService.sendUsers(roomKey, GameMessageType.USER_INFO);
         for(GamePlayer gamePlayer : game.getGamePlayers()){
             System.out.println(gamePlayer);
         }
     }
+
+    @MessageMapping("/rooms/{roomKey}/start-game")
+    public void startGame(@DestinationVariable String roomKey) {
+        Game game = gameInfoService.getGame(roomKey);
+        game.allocateJob();
+        List<GamePlayer> playerList = game.getGamePlayers();
+        for(GamePlayer gamePlayer:playerList){
+            System.out.println(gamePlayer);
+        }
+        gameInfoService.sendUsers(roomKey, GameMessageType.START);
+    }
+
+
 }
