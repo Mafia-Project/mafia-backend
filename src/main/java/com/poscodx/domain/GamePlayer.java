@@ -1,5 +1,6 @@
 package com.poscodx.domain;
 
+import java.util.Optional;
 import lombok.Getter;
 import java.util.Objects;
 
