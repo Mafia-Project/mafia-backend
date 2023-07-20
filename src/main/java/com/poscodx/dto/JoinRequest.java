@@ -11,4 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class JoinRequest {
     private String nickname;
+    private boolean host;
 }

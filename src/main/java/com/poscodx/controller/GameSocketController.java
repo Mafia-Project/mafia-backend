@@ -20,19 +20,24 @@ public class GameSocketController {
 
     private final GameInfoService gameInfoService;
 
-    @PostMapping("/rooms/{roomKey}/join-game")
-    public void send(@PathVariable String roomKey, JoinRequest joinRequest) {
-        System.out.println("Join game method");
-        Game game = gameInfoService.getGame(roomKey);
-        game.addGamePlayer(new GamePlayer(joinRequest.getNickname(), false));
-        gameInfoService.sendUsers(roomKey, GameMessageType.USER_INFO);
-        for(GamePlayer gamePlayer : game.getGamePlayers()){
-            System.out.println(gamePlayer);
+    @MessageMapping("/rooms/{roomKey}/join-game")
+    public void send(@DestinationVariable String roomKey, JoinRequest joinRequest) {
+        if(joinRequest.isHost() == true) {
+            gameInfoService.sendUsers(roomKey, GameMessageType.USER_INFO);
         }
+        else {
+            Game game = gameInfoService.getGame(roomKey);
+            game.addGamePlayer(new GamePlayer(joinRequest.getNickname(), false));
+            gameInfoService.sendUsers(roomKey, GameMessageType.USER_INFO);
+            for (GamePlayer gamePlayer : game.getGamePlayers()) {
+                System.out.println(gamePlayer);
+            }
+        }
+
     }
 
-    @PostMapping("/rooms/{roomKey}/start-game")
-    public void startGame(@PathVariable String roomKey) {
+    @MessageMapping("/rooms/{roomKey}/start-game")
+    public void startGame(@DestinationVariable String roomKey) {
         Game game = gameInfoService.getGame(roomKey);
         game.allocateJob();
         List<GamePlayer> playerList = game.getGamePlayers();
