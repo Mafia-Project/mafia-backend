@@ -64,10 +64,6 @@ public class GameSocketController {
                 gameInfoService.sendUsers(roomKey,GameMessageType.USER_INFO);
             }
         }
-
-
-
-
     }
 
     @MessageMapping("/rooms/{roomKey}/start-game")

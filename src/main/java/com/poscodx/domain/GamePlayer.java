@@ -9,6 +9,7 @@ import java.util.Objects;
 public class GamePlayer {
     private String nickname;
     private JobType job;
+    private JobType jobPsychopath;
     private Boolean killed = false;
     private Boolean host;
 
@@ -23,6 +24,9 @@ public class GamePlayer {
 
     public void setJob(JobType job){
         this.job = job;
+    }
+    public void setJobPsychopath(JobType jobPsychopath){
+        this.jobPsychopath = jobPsychopath;
     }
 
     public void setIsKilled(boolean killed){

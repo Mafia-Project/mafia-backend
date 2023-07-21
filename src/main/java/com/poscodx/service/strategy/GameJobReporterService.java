@@ -20,10 +20,11 @@ public class GameJobReporterService implements GameJobService {
     }
 
     @Override
-    public void jobEvent(Game game, NightEventRequest request) {
-        game.writeNightSummary(JobType.REPORTER, request.getTarget());
+    public void jobEvent(Game game, NightEventRequest request, boolean isPsychopath) {
+        if(!isPsychopath) game.writeNightSummary(JobType.REPORTER, request.getTarget());
         String message = getMessage(request.getTarget());
-        nightService.sendChoiceMessage(game.getKey(), message, JobType.REPORTER);
+        JobType playerJob = isPsychopath? JobType.PSYCHOPATH : JobType.REPORTER;
+        nightService.sendChoiceMessage(game.getKey(), message, playerJob);
     }
 
     private String getMessage(String target) {
