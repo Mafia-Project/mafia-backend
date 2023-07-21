@@ -36,16 +36,4 @@ public class GameSocketController {
 
     }
 
-    @MessageMapping("/rooms/{roomKey}/start-game")
-    public void startGame(@DestinationVariable String roomKey) {
-        Game game = gameInfoService.getGame(roomKey);
-        game.allocateJob();
-        List<GamePlayer> playerList = game.getGamePlayers();
-        for(GamePlayer gamePlayer:playerList){
-            System.out.println(gamePlayer);
-        }
-        gameInfoService.sendUsers(roomKey, GameMessageType.START);
-    }
-
-
 }
