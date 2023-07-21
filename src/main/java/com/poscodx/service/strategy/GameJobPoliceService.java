@@ -20,11 +20,12 @@ public class GameJobPoliceService implements GameJobService {
     }
 
     @Override
-    public void jobEvent(Game game, NightEventRequest request) {
+    public void jobEvent(Game game, NightEventRequest request, boolean isPsychopath) {
         GamePlayer target = game.findGamePlayerByNickname(request.getTarget());
-        JobType targetJob = target.getJob();
+        JobType targetJob = isPsychopath?  target.getJobPsychopath() : target.getJob();
+        JobType playerJob = isPsychopath? JobType.PSYCHOPATH : JobType.POLICE;
         String message = getMessage(target.getNickname(), targetJob);
-        nightService.sendChoiceMessage(game.getKey(), message, JobType.POLICE);
+        nightService.sendChoiceMessage(game.getKey(), message, playerJob);
     }
 
     private static String getMessage(String target, JobType targetJob) {

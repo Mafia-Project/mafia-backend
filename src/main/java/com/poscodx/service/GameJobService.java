@@ -5,5 +5,5 @@ import com.poscodx.dto.NightEventRequest;
 
 public interface GameJobService {
     boolean support(String job);
-    void jobEvent(Game game, NightEventRequest request);
+    void jobEvent(Game game, NightEventRequest request, boolean isPsychopath);
 }

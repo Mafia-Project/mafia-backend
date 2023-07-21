@@ -111,7 +111,7 @@ public class GameApiController {
         Game game = gameInfoService.getGame(id);
         jobServices.forEach(jobServices -> {
             if(jobServices.support(request.getJob().toString())){
-                jobServices.jobEvent(game, request);
+                jobServices.jobEvent(game, request, request.getJob().equals(JobType.PSYCHOPATH));
             }
         });
     }

@@ -19,7 +19,7 @@ public class GameJobMafiaService implements GameJobService {
     }
 
     @Override
-    public void jobEvent(Game game, NightEventRequest request) {
+    public void jobEvent(Game game, NightEventRequest request, boolean isPsychopath) {
         game.writeNightSummary(JobType.MAFIA, request.getTarget());
         String message = getMessage(request.getTarget());
         nightService.sendChoiceMessage(game.getKey(), message, JobType.MAFIA);

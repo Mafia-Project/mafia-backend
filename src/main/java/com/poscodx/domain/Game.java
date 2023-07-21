@@ -22,6 +22,8 @@ public class Game {
     @NonNull
     private List<GamePlayer> playerList;
 
+    private JobType psychopathJob;
+    private List<GamePlayer> forPyscopathPlayerList;
     private Map<JobType, String> nightSummary = new HashMap<>();
 
 
@@ -66,25 +68,55 @@ public class Game {
     }
 
     public void allocateJob(){
-        Collections.shuffle(playerList);
         int mafiaNum = playerList.size() / 4;
         List<JobType> jobs = new ArrayList<>();
+        List<JobType> jobsPsychoPath = new ArrayList<>();
 
         for(int i = 0; i < mafiaNum; i++) jobs.add(JobType.MAFIA);
-        if(isPsychopathAllowed) jobs.add(JobType.PSYCHOPATH);
+        if(isPsychopathAllowed) {
+            List<JobType> psychoCandidate = new ArrayList<JobType>();
+            psychoCandidate.add(JobType.POLICE);
+//            psychoCandidate.add(JobType.DOCTOR);
+//            psychoCandidate.add(JobType.REPORTER);
+            Collections.shuffle(psychoCandidate);
+            psychopathJob = psychoCandidate.get(0);
+            jobs.add(JobType.PSYCHOPATH);
+            System.out.println("PsychopathJob: " + psychopathJob);
+        }
+
+
         if(isReporterAllowed) jobs.add(JobType.REPORTER);
         jobs.add(JobType.POLICE);
         jobs.add(JobType.DOCTOR);
-        System.out.println("Jobs Length: "+ jobs.size());
-        System.out.println("playerList.size(): "+ playerList.size());
         int citizenNum = playerList.size() - jobs.size();
+
         for(int i = 0; i < citizenNum; i++){
             jobs.add(JobType.CITIZEN);
+        }
+
+        Collections.shuffle(jobs);
+
+        if(isPsychopathAllowed) {
+            jobsPsychoPath.addAll(jobs);
+            jobsPsychoPath.remove(JobType.PSYCHOPATH);
+            jobsPsychoPath.add(psychopathJob);
+            Collections.shuffle(jobsPsychoPath);
+
+
+            for(int i = 0; i < jobs.size(); i++){
+                if(jobs.get(i).equals(JobType.PSYCHOPATH) && !jobsPsychoPath.get(i).equals(psychopathJob)){
+                    JobType tmp = jobsPsychoPath.get(jobsPsychoPath.indexOf(psychopathJob));
+                    jobsPsychoPath.set(jobsPsychoPath.indexOf(psychopathJob), jobsPsychoPath.get(i));
+                    jobsPsychoPath.set(i, tmp);
+                    break;
+                }
+            }
         }
 
         System.out.println("Jobs Length: "+ jobs.size());
         for(int i = 0; i < jobs.size(); i++){
             playerList.get(i).setJob(jobs.get(i));
+            if(isPsychopathAllowed) playerList.get(i).setJobPsychopath(jobsPsychoPath.get(i));
         }
 
     }
