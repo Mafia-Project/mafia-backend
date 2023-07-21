@@ -12,7 +12,7 @@ import static com.poscodx.domain.GameMessageType.NIGHT_EVENT;
 public class NightEventResponse {
     private String message;
     private JobType receiverJob;
-    private GameMessageType messageType;
+    private GameMessageType type;
 
     public static NightEventResponse of(String message, JobType receiverJob, GameMessageType gameMessageType){
         return new NightEventResponse(message, receiverJob, gameMessageType);
