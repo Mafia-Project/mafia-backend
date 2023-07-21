@@ -16,7 +16,7 @@ import static com.poscodx.domain.GameMessageType.USER_INFO;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserInfoResponse {
     List<GamePlayer> playerInfo;
-    GameMessageType messageType;
+    GameMessageType type;
 
     public static UserInfoResponse of(List<GamePlayer> playerInfo, GameMessageType type){
         return new UserInfoResponse(playerInfo, type);

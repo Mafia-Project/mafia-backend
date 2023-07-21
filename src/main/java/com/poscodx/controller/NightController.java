@@ -7,6 +7,7 @@ import com.poscodx.domain.JobType;
 import com.poscodx.dto.NightEventRequest;
 import com.poscodx.service.GameInfoService;
 
+import com.poscodx.service.GameJobService;
 import com.poscodx.service.NightService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -25,8 +26,10 @@ import java.util.Objects;
 public class NightController {
     private final NightService nightService;
     private final GameInfoService gameInfoService;
-    @PostMapping ("/rooms/{roomKey}/night-mafia")
-    public void nightMafia(@PathVariable String roomKey, NightEventRequest request) {
+    private final List<GameJobService> jobServices;
+
+    @MessageMapping("/rooms/{roomKey}/night-mafia")
+    public void nightMafia(@DestinationVariable String roomKey, NightEventRequest request) {
         Game game = gameInfoService.getGame(roomKey);
         game.writeNightSummary(JobType.MAFIA, request.getTarget());
         String message = request.getTarget() + "님을 지목하였습니다";
@@ -117,4 +120,15 @@ public class NightController {
 
     }
 
+    @MessageMapping("/rooms/{roomKey}/{job}")
+    public void nightMafia(@DestinationVariable String roomKey,
+                           @DestinationVariable String job,
+                           NightEventRequest request) {
+        Game game = gameInfoService.getGame(roomKey);
+        jobServices.forEach(jobServices -> {
+                            if(jobServices.support(job)){
+                              jobServices.jobEvent(game, request);
+                            }
+                        });
+    }
 }
