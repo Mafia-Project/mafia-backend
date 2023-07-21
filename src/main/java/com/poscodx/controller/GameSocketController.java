@@ -5,15 +5,12 @@ import com.poscodx.domain.GameMessageType;
 import com.poscodx.domain.GamePlayer;
 import com.poscodx.dto.JoinRequest;
 import com.poscodx.service.GameInfoService;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import java.util.List;
-import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor

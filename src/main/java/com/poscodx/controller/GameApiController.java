@@ -9,6 +9,7 @@ import com.poscodx.dto.JoinRequest;
 import com.poscodx.dto.NightEventRequest;
 import com.poscodx.dto.TimeReductionRequest;
 import com.poscodx.dto.VoteRequest;
+import com.poscodx.service.GameEventService;
 import com.poscodx.service.GameInfoService;
 import com.poscodx.service.GameJobService;
 import com.poscodx.service.GameService;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameApiController {
 
     private final GameService gameService;
+    private final GameEventService gameEventService;
     private final GameInfoService gameInfoService;
     private final NightService nightService;
     private final List<GameJobService> jobServices;
@@ -146,31 +148,8 @@ public class GameApiController {
         }
 
         gameInfoService.sendUsers(roomKey, GameMessageType.NIGHT_END);
-
-
-        //Game Over 유무 파악
-        int aliveMafia = 0;
-        int aliveCitizen = 0;
-        for(GamePlayer gamePlayer : playerList){
-            if(!gamePlayer.getKilled()){
-                if(gamePlayer.getJob().equals(JobType.MAFIA)) aliveMafia+= 1;
-                else aliveCitizen += 1;
-            }
-        }
-
-        if(aliveMafia >= aliveCitizen){
-            String endMessage = "마피아팀이 승리하였습니다.";
-            nightService.sendNightEndGameOverMessage(roomKey, endMessage);
-        }
         game.clearNightSummary();
-
-
-        for(GamePlayer gamePlayer : game.getPlayerList()){
-            System.out.println(gamePlayer);
-        }
-        System.out.println(aliveMafia + " " + aliveCitizen);
-        System.out.println(nightSummary);
-
+        gameEventService.confirmGameEndAfterDeathEvent(game);
     }
     @PostMapping("/rooms/temp-game")
     public ResponseEntity<String> temGame(@RequestBody CreateRoomRequest request) {

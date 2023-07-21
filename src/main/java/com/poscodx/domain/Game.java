@@ -1,7 +1,6 @@
 package com.poscodx.domain;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +65,7 @@ public class Game {
     }
 
     public void allocateJob(){
+        playerList.forEach(gamePlayer -> gamePlayer.setIsKilled(false));
         Collections.shuffle(playerList);
         int mafiaNum = playerList.size() / 4;
         List<JobType> jobs = new ArrayList<>();
@@ -94,5 +94,15 @@ public class Game {
             if (gamePlayer.getNickname().equals(nickname)) return false;
         }
         return true;
+    }
+
+    public long getAliveMafiaNumber(){
+        return playerList.stream()
+                .filter(player -> player.getJob().equals(JobType.MAFIA) && !player.getKilled()).count();
+    }
+
+    public long getAliveCitizenNumber(){
+        return playerList.stream()
+                .filter(player -> !player.getJob().equals(JobType.MAFIA) && !player.getKilled()).count();
     }
 }

@@ -49,6 +49,7 @@ public class GameService {
         ));
     }
 
+
     private String getVoteResultTarget(GameVote gameVote) {
         return Objects.isNull(gameVote) || Objects.isNull(gameVote.voteResult()) ? null : gameVote.voteResult();
     }
