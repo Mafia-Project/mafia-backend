@@ -76,8 +76,8 @@ public class Game {
         if(isPsychopathAllowed) {
             List<JobType> psychoCandidate = new ArrayList<JobType>();
             psychoCandidate.add(JobType.POLICE);
-//            psychoCandidate.add(JobType.DOCTOR);
-//            psychoCandidate.add(JobType.REPORTER);
+            psychoCandidate.add(JobType.DOCTOR);
+            psychoCandidate.add(JobType.REPORTER);
             Collections.shuffle(psychoCandidate);
             psychopathJob = psychoCandidate.get(0);
             jobs.add(JobType.PSYCHOPATH);
