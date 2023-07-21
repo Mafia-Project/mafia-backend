@@ -24,12 +24,12 @@ public class GameEventService {
     private final GameInfoService gameInfoService;
 
 
-    public void playerDeadEvent(String roomKey, String targetName){
+    public void playerDeadEvent(String roomKey, String targetName, GameMessageType type){
         if (targetName == null) return;
         Game game = gameInfoService.getGame(roomKey);
         GamePlayer target = game.findGamePlayerByNickname(targetName);
         target.die();
-        gameInfoService.sendUsers(roomKey, GameMessageType.USER_INFO);
+        gameInfoService.sendUsers(roomKey, type);
     }
     //response : front-end 참조
     public void messageSent(String roomKey, Map<String, Object> message){

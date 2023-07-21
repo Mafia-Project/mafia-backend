@@ -1,9 +1,9 @@
 package com.poscodx.service;
 
 import static com.poscodx.utils.SocketTopicUtils.*;
-import static com.poscodx.utils.SocketTopicUtils.getChatTopic;
 import static com.poscodx.utils.SocketTopicUtils.getRoomTopic;
 
+import com.poscodx.domain.GameMessageType;
 import com.poscodx.domain.GameVote;
 import com.poscodx.dto.ChatResponse;
 import com.poscodx.dto.TimeReductionRequest;
@@ -39,11 +39,11 @@ public class GameService {
         simpMessagingTemplate.convertAndSend(getRoomTopic(id), MapUtils.toMap(response));
     }
 
-    public void result(String id) {
+    public void voteResult(String id) {
         var gameVote = voteRepository.findById(id).orElse(null);
         voteRepository.remove(id);
         String target = getVoteResultTarget(gameVote);
-        gameEventService.playerDeadEvent(id, target);
+        gameEventService.playerDeadEvent(id, target, GameMessageType.VOTE_RESULT);
         gameEventService.messageSent(id, MapUtils.toMap(
                 ChatResponse.of(SYSTEM_NAME, voteResultMessage(target))
         ));

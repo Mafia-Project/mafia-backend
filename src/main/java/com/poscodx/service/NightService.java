@@ -12,12 +12,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NightService {
     private final SimpMessagingTemplate simpMessagingTemplate;
-
-    public void testMessage(String roomKey, String message){
-        String topic = String.format("/sub/rooms/%s", roomKey);
-        simpMessagingTemplate.convertAndSend(topic, message);
-    }
-
     public void sendNightEndMessage(String roomKey, String message){
         var response = NightEventResponse.of(message,null ,GameMessageType.NIGHT_END);
         simpMessagingTemplate.convertAndSend(getTopic(roomKey), MapUtils.toMap(response));
