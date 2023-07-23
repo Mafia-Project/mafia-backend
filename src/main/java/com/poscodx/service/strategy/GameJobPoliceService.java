@@ -35,7 +35,7 @@ public class GameJobPoliceService implements GameJobService {
         JobType playerJob = isPsychopath? JobType.PSYCHOPATH : JobType.POLICE;
         String message = getMessage(target.getNickname(), targetJob);
         nightService.sendChoiceMessage(game.getKey(), message, playerJob);
-        nightService.sendJobEventMessage(game.getKey(), ChatJobResponse.of(SYSTEM_NAME, message, JOB, POLICE));
+        nightService.sendJobEventMessage(game.getKey(), ChatJobResponse.of(SYSTEM_NAME, message, JOB, playerJob));
     }
 
     private static String getMessage(String target, JobType targetJob) {

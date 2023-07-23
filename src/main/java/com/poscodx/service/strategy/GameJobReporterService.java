@@ -34,7 +34,7 @@ public class GameJobReporterService implements GameJobService {
         String message = getMessage(request.getTarget());
         JobType playerJob = isPsychopath? JobType.PSYCHOPATH : JobType.REPORTER;
         nightService.sendChoiceMessage(game.getKey(), message, playerJob);
-        nightService.sendJobEventMessage(game.getKey(), ChatJobResponse.of(SYSTEM_NAME, message, JOB, REPORTER));
+        nightService.sendJobEventMessage(game.getKey(), ChatJobResponse.of(SYSTEM_NAME, message, JOB, playerJob));
     }
 
     private String getMessage(String target) {

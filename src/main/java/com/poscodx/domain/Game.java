@@ -23,6 +23,9 @@ public class Game {
 
     private JobType psychopathJob;
     private List<GamePlayer> forPyscopathPlayerList;
+    private Boolean isVoteResultAble = false;
+    private Boolean isNightEndAble = false;
+    private Boolean isStart = false;
     private Map<JobType, List<String>> nightSummary = new HashMap<>();
 
 
@@ -76,6 +79,7 @@ public class Game {
     }
 
     public void allocateJob(){
+        initialize();
         disOpen();
         playerList.forEach(gamePlayer -> gamePlayer.setIsKilled(false));
         Collections.shuffle(playerList);
@@ -88,7 +92,7 @@ public class Game {
             List<JobType> psychoCandidate = new ArrayList<JobType>();
             psychoCandidate.add(JobType.POLICE);
             psychoCandidate.add(JobType.DOCTOR);
-            psychoCandidate.add(JobType.REPORTER);
+            if(isReporterAllowed) psychoCandidate.add(JobType.REPORTER);
             Collections.shuffle(psychoCandidate);
             psychopathJob = psychoCandidate.get(0);
             jobs.add(JobType.PSYCHOPATH);
@@ -168,6 +172,7 @@ public class Game {
     }
 
     public void end(){
+        this.isVoteResultAble = false;
         for (GamePlayer gamePlayer : playerList) {
             gamePlayer.isOpen();
         }
@@ -179,4 +184,30 @@ public class Game {
         }
     }
 
+    public Boolean isVoteResultAble() {
+        return isVoteResultAble;
+    }
+
+    public Boolean isStart() {
+        return isStart;
+    }
+
+    public Boolean isNightEndAble(){
+        return isNightEndAble;
+    }
+
+    public void changeVoteResultAble(Boolean isVoteResultAble){
+        this.isVoteResultAble = isVoteResultAble;
+    }
+
+
+    public void changeNightEndAble(Boolean isNightEndAble){
+        this.isNightEndAble = isNightEndAble;
+    }
+
+    void initialize(){
+        this.isStart = true;
+        this.isNightEndAble = true;
+        this.isVoteResultAble = true;
+    }
 }

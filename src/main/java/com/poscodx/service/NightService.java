@@ -57,12 +57,12 @@ public class NightService {
 
     public synchronized void nightEventResult(Game game){
         Map<JobType, List<String>> nightSummary = game.getNightSummary();
-        if (nightSummary.isEmpty()) return;
+        if (!game.isStart() && !game.isNightEndAble()) return;
 
         if(Objects.nonNull(nightSummary.get(JobType.DOCTOR))){
             String doctorEvent = game.doctorEvent();
             if(Objects.nonNull(doctorEvent)) {
-                String message = game.doctorEvent() + "님이 의사에 의해서 살아났습니다!!";
+                String message = doctorEvent + "님이 의사에 의해서 살아났습니다!!";
                 gameEventService.messageSent(game.getKey(), MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
             }
         }
@@ -87,6 +87,8 @@ public class NightService {
             gameEventService.messageSent(game.getKey(), MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
         }
 
+        game.changeNightEndAble(false);
+        game.changeVoteResultAble(true);
         gameInfoService.sendUsers(game.getKey(), GameMessageType.NIGHT_END);
         game.clearNightSummary();
         gameEventService.confirmGameEndAfterDeathEvent(game, GameMessageType.NIGHT_END);

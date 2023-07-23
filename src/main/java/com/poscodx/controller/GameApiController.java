@@ -108,10 +108,12 @@ public class GameApiController {
         game.allocateJob();
         gameInfoService.sendUsers(id, GameMessageType.START);
         for (GamePlayer gamePlayer : game.getGamePlayers()) {
+            String jobName = gamePlayer.getJob().equals(JobType.PSYCHOPATH) ? game.getPsychopathJob().name()
+                    : gamePlayer.getJob().name();
             gameEventService.messageSent(id, toMap(
                     ChatResponse.of(
                             gamePlayer.getNickname(),
-                            String.format("당신의 직업은 '%s' 입니다.", gamePlayer.getJob().name()),
+                            String.format("당신의 직업은 '%s' 입니다.", jobName),
                             ChatType.JOB)
             ));
         }
