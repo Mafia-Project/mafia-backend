@@ -31,7 +31,7 @@ public class GameInfoService {
             roomKey = UUID.randomUUID().toString().substring(0,5);
             System.out.println(roomKey);
         }
-        List<GamePlayer> playerList = new ArrayList<GamePlayer>();
+        List<GamePlayer> playerList = new ArrayList<>();
         playerList.add(host);
         return gameInfo.addGame(new Game(roomKey, isPsychopathAllowed, isReporterAllowed, maximumPlayer, playerList));
     }
@@ -45,23 +45,10 @@ public class GameInfoService {
     }
 
     public void sendUsers(String roomKey, GameMessageType messageType){
-        System.out.println("in Send User");
         Game game = getGame(roomKey);
-        List<GamePlayer> gamePlayerList = game.getPlayerList();
-        System.out.println("getPlayer");
-
-        for(GamePlayer gamePlayer : gamePlayerList){
-            System.out.println(gamePlayer);
-        }
-        var response = UserInfoResponse.of(gamePlayerList, messageType);
-        System.out.println("getResponse");
-
-
         simpMessagingTemplate.convertAndSend(
                 SocketTopicUtils.getRoomTopic(roomKey),
-                MapUtils.toMap(response));
-
-        System.out.println("Send Complete");
+                MapUtils.toMap(UserInfoResponse.of(game.getPlayerList(), messageType)));
 
     }
 

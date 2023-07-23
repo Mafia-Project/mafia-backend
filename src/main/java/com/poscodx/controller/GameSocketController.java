@@ -27,16 +27,6 @@ public class GameSocketController {
     private final GameInfoService gameInfoService;
     private final GameEventService gameEventService;
 
-    /*
-     * TODO
-     *   나가기 기능
-     *     Nickname, RoomKey validation. 통과여부 확인
-     *     남은 사람이 1명인 상황에서 해당 기능이 호출된다면 remove Room.
-     *     방장이 나갔을 경우 index 0번에 방장 위임
-     *     GamePlayer remove이후, PlayerList 데이터 전송. (USER_INFO)
-     *
-     * */
-
 
     @MessageMapping("/rooms/{roomKey}/join-game")
     public void joinGame(@DestinationVariable String roomKey, JoinRequest joinRequest) {
@@ -53,7 +43,7 @@ public class GameSocketController {
     public void quitGame(@DestinationVariable String roomKey, JoinRequest joinRequest) {
         Game game = gameInfoService.getGame(roomKey);
         if (Objects.isNull(game)) {
-            return; //방이 존재하지 않는 경우
+            return;
         }
 
         if (game.getGamePlayers().size() == 1) {

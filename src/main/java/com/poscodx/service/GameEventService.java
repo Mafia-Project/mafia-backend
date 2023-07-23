@@ -34,7 +34,10 @@ public class GameEventService {
 
 
     public void playerDeadEvent(String roomKey, String targetName, GameMessageType type){
-        if (targetName == null) return;
+        if (targetName == null){
+            gameInfoService.sendUsers(roomKey, type);
+            return;
+        }
         Game game = gameInfoService.getGame(roomKey);
         GamePlayer target = game.findGamePlayerByNickname(targetName);
         target.die();
@@ -45,7 +48,7 @@ public class GameEventService {
         simpMessagingTemplate.convertAndSend(getChatTopic(roomKey), message);
     }
 
-    public void confirmGameEndAfterDeathEvent(Game game, GameMessageType type){
+    public synchronized void confirmGameEndAfterDeathEvent(Game game, GameMessageType type){
         long citizenNumber = game.getAliveCitizenNumber();
         long mafiaNumber = game.getAliveMafiaNumber();
 

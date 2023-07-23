@@ -30,9 +30,9 @@ public class GameJobDoctorService implements GameJobService {
     public void jobEvent(Game game, NightEventRequest request, boolean isPsychopath) {
         if(!isPsychopath) game.writeNightSummary(JobType.DOCTOR, request.getTarget());
         String message = getMessage(request.getTarget());
-        JobType playerJob = isPsychopath? JobType.PSYCHOPATH : JobType.REPORTER;
+        JobType playerJob = isPsychopath? JobType.PSYCHOPATH : JobType.DOCTOR;
         nightService.sendChoiceMessage(game.getKey(), message, playerJob);
-        nightService.sendJobEventMessage(game.getKey(), ChatJobResponse.of(SYSTEM_NAME, message, ChatType.JOB, JobType.DOCTOR));
+        nightService.sendJobEventMessage(game.getKey(), ChatJobResponse.of(SYSTEM_NAME, message, ChatType.JOB, playerJob));
     }
 
     private String getMessage(String target) {

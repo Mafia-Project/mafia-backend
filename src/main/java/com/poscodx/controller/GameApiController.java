@@ -2,7 +2,6 @@ package com.poscodx.controller;
 
 import static com.poscodx.utils.MapUtils.toMap;
 import static com.poscodx.utils.SocketTopicUtils.SYSTEM_NAME;
-import static com.poscodx.utils.SocketTopicUtils.TIME_REDUCTION_MASSAGE;
 
 import com.poscodx.domain.ChatType;
 import com.poscodx.domain.Game;
@@ -134,38 +133,10 @@ public class GameApiController {
     }
 
     @PostMapping("/rooms/{roomKey}/night-end")
-    public void nightEnd(@PathVariable String roomKey) {
+    public ResponseEntity<Void> nightEnd(@PathVariable String roomKey) {
         Game game = gameInfoService.getGame(roomKey);
-        Map<JobType, List<String>> nightSummary = game.getNightSummary();
-        if(Objects.nonNull(nightSummary.get(JobType.DOCTOR)) && Objects.nonNull(game.doctorEvent())){
-            String message = game.doctorEvent() + "님이 의사에 의해서 살아났습니다!!";
-            gameEventService.messageSent(roomKey, MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
-        }
-
-        if (Objects.nonNull(nightSummary.get(JobType.MAFIA))) {
-            List<String> targetNicknames = nightSummary.get(JobType.MAFIA);
-            for (String targetNickname : targetNicknames) {
-                game.findGamePlayerByNickname(targetNickname).die();
-            }
-            String message = String.join(",", targetNicknames) + "님이 마피아에 의해 살해당했습니다!";
-            gameEventService.messageSent(roomKey, MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
-        }else{
-            String message = "아무일도 일어나지 않았습니다.";
-            gameEventService.messageSent(roomKey, MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
-        }
-
-        if (Objects.nonNull(nightSummary.get(JobType.REPORTER))) {
-            String targetNickname = nightSummary.get(JobType.REPORTER).get(0);
-
-            JobType targetJob = game.findGamePlayerByNickname(targetNickname).getJob();
-            String message = targetNickname + "님이" + targetJob.toString() + " (이)라는 기사가 특보로 실렸습니다!";
-            gameEventService.messageSent(roomKey, MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
-        }
-
-        gameInfoService.sendUsers(roomKey, GameMessageType.NIGHT_END);
-        game.clearNightSummary();
-        gameEventService.confirmGameEndAfterDeathEvent(game, GameMessageType.NIGHT_END);
-
+        nightService.nightEventResult(game);
+        return ResponseEntity.ok().build();
     }
     @PostMapping("/rooms/temp-game")
     public ResponseEntity<String> temGame(@RequestBody CreateRoomRequest request) {

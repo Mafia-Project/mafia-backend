@@ -40,8 +40,9 @@ public class GameService {
         simpMessagingTemplate.convertAndSend(getRoomTopic(id), MapUtils.toMap(response));
     }
 
-    public void voteResult(String id) {
+    public synchronized void voteResult(String id) {
         var gameVote = voteRepository.findById(id).orElse(null);
+        if(Objects.isNull(gameVote)) return;
         voteRepository.remove(id);
         String target = getVoteResultTarget(gameVote);
         gameEventService.messageSent(id, MapUtils.toMap(

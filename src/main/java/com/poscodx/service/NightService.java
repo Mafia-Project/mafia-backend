@@ -25,6 +25,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NightService {
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final GameEventService gameEventService;
+    private final GameInfoService gameInfoService;
+
     public void sendNightEndMessage(String roomKey, String message){
         var response = NightEventResponse.of(message,null ,GameMessageType.NIGHT_END);
         simpMessagingTemplate.convertAndSend(getRoomTopic(roomKey), toMap(response));
@@ -50,5 +53,42 @@ public class NightService {
     public void sendChoiceMessage(String roomKey, String message, JobType jobType){
         var response = NightEventResponse.of(message, jobType ,GameMessageType.NIGHT_EVENT);
         simpMessagingTemplate.convertAndSend(getRoomTopic(roomKey), toMap(response));
+    }
+
+    public synchronized void nightEventResult(Game game){
+        Map<JobType, List<String>> nightSummary = game.getNightSummary();
+        if (nightSummary.isEmpty()) return;
+
+        if(Objects.nonNull(nightSummary.get(JobType.DOCTOR))){
+            String doctorEvent = game.doctorEvent();
+            if(Objects.nonNull(doctorEvent)) {
+                String message = game.doctorEvent() + "님이 의사에 의해서 살아났습니다!!";
+                gameEventService.messageSent(game.getKey(), MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
+            }
+        }
+
+        if (Objects.nonNull(nightSummary.get(JobType.MAFIA)) && nightSummary.get(JobType.MAFIA).size() > 0) {
+            List<String> targetNicknames = nightSummary.get(JobType.MAFIA);
+            for (String targetNickname : targetNicknames) {
+                game.findGamePlayerByNickname(targetNickname).die();
+            }
+            String message = String.join(",", targetNicknames) + "님이 마피아에 의해 살해당했습니다!";
+            gameEventService.messageSent(game.getKey(), MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
+        }else{
+            String message = "아무일도 일어나지 않았습니다.";
+            gameEventService.messageSent(game.getKey(), MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
+        }
+
+        if (Objects.nonNull(nightSummary.get(JobType.REPORTER))) {
+            String targetNickname = nightSummary.get(JobType.REPORTER).get(0);
+
+            JobType targetJob = game.findGamePlayerByNickname(targetNickname).getJob();
+            String message = targetNickname + "님이" + targetJob.toString() + " (이)라는 기사가 특보로 실렸습니다!";
+            gameEventService.messageSent(game.getKey(), MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
+        }
+
+        gameInfoService.sendUsers(game.getKey(), GameMessageType.NIGHT_END);
+        game.clearNightSummary();
+        gameEventService.confirmGameEndAfterDeathEvent(game, GameMessageType.NIGHT_END);
     }
 }
