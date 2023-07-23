@@ -139,6 +139,9 @@ public class Game {
         return true;
     }
 
+    public void setHost(){
+        playerList.get(0).setIsHost(true);
+    }
     public long getAliveMafiaNumber(){
         return playerList.stream()
                 .filter(player -> player.getJob().equals(JobType.MAFIA) && !player.getKilled()).count();
