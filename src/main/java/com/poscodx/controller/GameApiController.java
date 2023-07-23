@@ -1,18 +1,26 @@
 package com.poscodx.controller;
 
+import static com.poscodx.utils.MapUtils.toMap;
+import static com.poscodx.utils.SocketTopicUtils.SYSTEM_NAME;
+import static com.poscodx.utils.SocketTopicUtils.TIME_REDUCTION_MASSAGE;
+
+import com.poscodx.domain.ChatType;
 import com.poscodx.domain.Game;
 import com.poscodx.domain.GameMessageType;
 import com.poscodx.domain.GamePlayer;
 import com.poscodx.domain.JobType;
+import com.poscodx.dto.ChatResponse;
 import com.poscodx.dto.CreateRoomRequest;
 import com.poscodx.dto.JoinRequest;
 import com.poscodx.dto.NightEventRequest;
 import com.poscodx.dto.TimeReductionRequest;
 import com.poscodx.dto.VoteRequest;
+import com.poscodx.service.GameEventService;
 import com.poscodx.service.GameInfoService;
 import com.poscodx.service.GameJobService;
 import com.poscodx.service.GameService;
 import com.poscodx.service.NightService;
+import com.poscodx.utils.MapUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameApiController {
 
     private final GameService gameService;
+    private final GameEventService gameEventService;
     private final GameInfoService gameInfoService;
     private final NightService nightService;
     private final List<GameJobService> jobServices;
@@ -90,6 +99,7 @@ public class GameApiController {
     @GetMapping("/rooms/{id}/vote")
     public ResponseEntity<Void> voteResult(@PathVariable String id) {
         gameService.voteResult(id);
+
         return ResponseEntity.ok().build();
     }
 
@@ -97,11 +107,18 @@ public class GameApiController {
     public ResponseEntity<Void> startGame(@PathVariable String id) {
         Game game = gameInfoService.getGame(id);
         game.allocateJob();
-        List<GamePlayer> playerList = game.getGamePlayers();
-        for(GamePlayer gamePlayer:playerList){
-            System.out.println(gamePlayer);
-        }
         gameInfoService.sendUsers(id, GameMessageType.START);
+        for (GamePlayer gamePlayer : game.getGamePlayers()) {
+            gameEventService.messageSent(id, toMap(
+                    ChatResponse.of(
+                            gamePlayer.getNickname(),
+                            String.format("당신의 직업은 '%s' 입니다.", gamePlayer.getJob().name()),
+                            ChatType.JOB)
+            ));
+        }
+        gameEventService.messageSent(id, MapUtils.toMap(
+                ChatResponse.of(SYSTEM_NAME, "밤이 시작되어 마피아가 활동합니다.", ChatType.SYSTEM))
+        );
         return ResponseEntity.ok().build();
     }
 
@@ -119,57 +136,35 @@ public class GameApiController {
     @PostMapping("/rooms/{roomKey}/night-end")
     public void nightEnd(@PathVariable String roomKey) {
         Game game = gameInfoService.getGame(roomKey);
-        List<GamePlayer> playerList = game.getPlayerList();
-        Map<JobType, String> nightSummary = game.getNightSummary();
-        System.out.println(nightSummary);
-
-
-        if(Objects.nonNull(nightSummary.get(JobType.DOCTOR)) &&
-                Objects.nonNull(nightSummary.get(JobType.MAFIA))&&
-                nightSummary.get(JobType.DOCTOR).equals(nightSummary.get(JobType.MAFIA))){
-            String message = nightSummary.get(JobType.DOCTOR) + "님이 의사에 의해서 살아났습니다!!";
-            nightService.sendNightEndMessage(roomKey, message);
-
-        }else if(Objects.nonNull(nightSummary.get(JobType.MAFIA))) {
-            GamePlayer player = game.findGamePlayerByNickname(nightSummary.get(JobType.MAFIA));
-            player.setIsKilled(true);
-
-            String message = nightSummary.get(JobType.MAFIA) + "님이 마피아에 의해 살해당했습니다!";
-            nightService.sendNightEndMessage(roomKey, message);
+        Map<JobType, List<String>> nightSummary = game.getNightSummary();
+        if(Objects.nonNull(nightSummary.get(JobType.DOCTOR)) && Objects.nonNull(game.doctorEvent())){
+            String message = game.doctorEvent() + "님이 의사에 의해서 살아났습니다!!";
+            gameEventService.messageSent(roomKey, MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
         }
 
-        if(Objects.nonNull(nightSummary.get(JobType.REPORTER))){
-            String targetNickname = nightSummary.get(JobType.REPORTER);
+        if (Objects.nonNull(nightSummary.get(JobType.MAFIA))) {
+            List<String> targetNicknames = nightSummary.get(JobType.MAFIA);
+            for (String targetNickname : targetNicknames) {
+                game.findGamePlayerByNickname(targetNickname).die();
+            }
+            String message = String.join(",", targetNicknames) + "님이 마피아에 의해 살해당했습니다!";
+            gameEventService.messageSent(roomKey, MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
+        }else{
+            String message = "아무일도 일어나지 않았습니다.";
+            gameEventService.messageSent(roomKey, MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
+        }
+
+        if (Objects.nonNull(nightSummary.get(JobType.REPORTER))) {
+            String targetNickname = nightSummary.get(JobType.REPORTER).get(0);
+
             JobType targetJob = game.findGamePlayerByNickname(targetNickname).getJob();
-            String reporterMessage = targetNickname + "님이"+ targetJob.toString() +" (이)라는 기사가 특보로 실렸습니다!";
-            nightService.sendNightEndMessage(roomKey, reporterMessage);
+            String message = targetNickname + "님이" + targetJob.toString() + " (이)라는 기사가 특보로 실렸습니다!";
+            gameEventService.messageSent(roomKey, MapUtils.toMap(ChatResponse.of(SYSTEM_NAME, message, ChatType.SYSTEM)));
         }
 
         gameInfoService.sendUsers(roomKey, GameMessageType.NIGHT_END);
-
-
-        //Game Over 유무 파악
-        int aliveMafia = 0;
-        int aliveCitizen = 0;
-        for(GamePlayer gamePlayer : playerList){
-            if(!gamePlayer.getKilled()){
-                if(gamePlayer.getJob().equals(JobType.MAFIA)) aliveMafia+= 1;
-                else aliveCitizen += 1;
-            }
-        }
-
-        if(aliveMafia >= aliveCitizen){
-            String endMessage = "마피아팀이 승리하였습니다.";
-            nightService.sendNightEndGameOverMessage(roomKey, endMessage);
-        }
         game.clearNightSummary();
-
-
-        for(GamePlayer gamePlayer : game.getPlayerList()){
-            System.out.println(gamePlayer);
-        }
-        System.out.println(aliveMafia + " " + aliveCitizen);
-        System.out.println(nightSummary);
+        gameEventService.confirmGameEndAfterDeathEvent(game, GameMessageType.NIGHT_END);
 
     }
     @PostMapping("/rooms/temp-game")

@@ -3,6 +3,7 @@ package com.poscodx.service;
 import static com.poscodx.utils.SocketTopicUtils.*;
 import static com.poscodx.utils.SocketTopicUtils.getRoomTopic;
 
+import com.poscodx.domain.ChatType;
 import com.poscodx.domain.GameMessageType;
 import com.poscodx.domain.GameVote;
 import com.poscodx.dto.ChatResponse;
@@ -29,8 +30,8 @@ public class GameService {
         var response = TimeReductionResponse.of(request.getTime() / 2);
         simpMessagingTemplate.convertAndSend(getRoomTopic(id), MapUtils.toMap(response));
         gameEventService.messageSent(id, MapUtils.toMap(
-                ChatResponse.of(SYSTEM_NAME, String.format(TIME_REDUCTION_MASSAGE, request.getNickname()))
-        ));
+                ChatResponse.of(SYSTEM_NAME, String.format(TIME_REDUCTION_MASSAGE, request.getNickname()), ChatType.SYSTEM))
+        );
     }
 
     public void vote(String id, VoteRequest request) {
@@ -43,11 +44,12 @@ public class GameService {
         var gameVote = voteRepository.findById(id).orElse(null);
         voteRepository.remove(id);
         String target = getVoteResultTarget(gameVote);
-        gameEventService.playerDeadEvent(id, target, GameMessageType.VOTE_RESULT);
         gameEventService.messageSent(id, MapUtils.toMap(
-                ChatResponse.of(SYSTEM_NAME, voteResultMessage(target))
+                ChatResponse.of(SYSTEM_NAME, voteResultMessage(target), ChatType.SYSTEM)
         ));
+        gameEventService.playerDeadEvent(id, target, GameMessageType.VOTE_RESULT);
     }
+
 
     private String getVoteResultTarget(GameVote gameVote) {
         return Objects.isNull(gameVote) || Objects.isNull(gameVote.voteResult()) ? null : gameVote.voteResult();

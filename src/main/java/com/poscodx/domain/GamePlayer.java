@@ -13,6 +13,8 @@ public class GamePlayer {
     private Boolean killed = false;
     private Boolean host;
 
+    private Boolean isOpen = false;
+
     public GamePlayer(String nickname, boolean host){
         this.nickname = nickname;
         this.host = host;
@@ -58,5 +60,12 @@ public class GamePlayer {
                 ", killed=" + killed +
                 ", host=" + host +
                 '}';
+    }
+
+    void isOpen(){
+        this.isOpen = true;
+    }
+    void disOpen(){
+        this.isOpen = false;
     }
 }
