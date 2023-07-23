@@ -60,8 +60,7 @@ public class GameSocketController {
             }else{
                 game.removeGamePlayer(player);
                 if(joinRequest.isHost()){//방장인 경우
-                    List<GamePlayer> gamePlayerList = game.getPlayerList();
-                    gamePlayerList.get(0).setIsHost(true);
+                   game.setHost();
                 }
 
                 gameInfoService.sendUsers(roomKey,GameMessageType.USER_INFO);
