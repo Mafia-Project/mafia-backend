@@ -1,5 +1,7 @@
 package com.poscodx.controller;
 
+import com.poscodx.dto.ChatRequest;
+import com.poscodx.dto.ChatResponse;
 import com.poscodx.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -13,9 +15,8 @@ public class ChatController {
     private final ChatService chatService;
 
     @MessageMapping("/chat/rooms/{id}")
-    public void send(@DestinationVariable String id, String message) {
-        chatService.sendMessage(id, message);
-        System.out.println("채팅");
-        System.out.println(message);
+    public void send(@DestinationVariable String id, ChatRequest request) {
+        System.out.println(request.toString());
+        chatService.sendMessage(id, request);
     }
 }

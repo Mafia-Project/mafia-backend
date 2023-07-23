@@ -23,7 +23,7 @@ public class Game {
 
     private JobType psychopathJob;
     private List<GamePlayer> forPyscopathPlayerList;
-    private Map<JobType, String> nightSummary = new HashMap<>();
+    private Map<JobType, List<String>> nightSummary = new HashMap<>();
 
 
     public void addGamePlayer(GamePlayer gamePlayer) {
@@ -59,7 +59,16 @@ public class Game {
     }
 
     public void writeNightSummary(JobType jobType, String targetNickname){
-        nightSummary.put(jobType, targetNickname);
+        List<String> targetList;
+        if(nightSummary.containsKey(jobType)){
+            targetList = nightSummary.get(jobType);
+        }else{
+            targetList = new ArrayList<>();
+            nightSummary.put(jobType, targetList);
+        }
+        if(!targetList.contains(targetNickname)){
+            targetList.add(targetNickname);
+        }
     }
 
     public void clearNightSummary(){
@@ -67,6 +76,7 @@ public class Game {
     }
 
     public void allocateJob(){
+        disOpen();
         playerList.forEach(gamePlayer -> gamePlayer.setIsKilled(false));
         Collections.shuffle(playerList);
         int mafiaNum = playerList.size() / 4;
@@ -138,4 +148,32 @@ public class Game {
         return playerList.stream()
                 .filter(player -> !player.getJob().equals(JobType.MAFIA) && !player.getKilled()).count();
     }
+
+    public String doctorEvent(){
+        List<String> mafiaTargets = nightSummary.get(JobType.MAFIA);
+        List<String> doctorTargets = nightSummary.get(JobType.DOCTOR);
+
+        if (mafiaTargets == null || doctorTargets == null) return null;
+
+        for(String doctorTarget : doctorTargets) {
+            if(mafiaTargets.contains(doctorTarget)) {
+                mafiaTargets.remove(doctorTarget);
+                return doctorTarget;
+            }
+        }
+        return null;
+    }
+
+    public void end(){
+        for (GamePlayer gamePlayer : playerList) {
+            gamePlayer.isOpen();
+        }
+    }
+
+    private void disOpen(){
+        for (GamePlayer gamePlayer : playerList) {
+            gamePlayer.disOpen();
+        }
+    }
+
 }

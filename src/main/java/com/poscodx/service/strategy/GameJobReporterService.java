@@ -1,10 +1,19 @@
 package com.poscodx.service.strategy;
 
+import static com.poscodx.domain.ChatType.JOB;
+import static com.poscodx.domain.JobType.POLICE;
+import static com.poscodx.domain.JobType.REPORTER;
+import static com.poscodx.utils.SocketTopicUtils.SYSTEM_NAME;
+
+import com.poscodx.domain.ChatType;
 import com.poscodx.domain.Game;
 import com.poscodx.domain.JobType;
+import com.poscodx.dto.ChatJobResponse;
+import com.poscodx.dto.ChatResponse;
 import com.poscodx.dto.NightEventRequest;
 import com.poscodx.service.GameJobService;
 import com.poscodx.service.NightService;
+import com.poscodx.utils.SocketTopicUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +34,7 @@ public class GameJobReporterService implements GameJobService {
         String message = getMessage(request.getTarget());
         JobType playerJob = isPsychopath? JobType.PSYCHOPATH : JobType.REPORTER;
         nightService.sendChoiceMessage(game.getKey(), message, playerJob);
+        nightService.sendJobEventMessage(game.getKey(), ChatJobResponse.of(SYSTEM_NAME, message, JOB, REPORTER));
     }
 
     private String getMessage(String target) {

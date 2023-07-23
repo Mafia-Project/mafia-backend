@@ -1,5 +1,6 @@
 package com.poscodx.service;
 
+import com.poscodx.domain.ChatType;
 import com.poscodx.domain.Game;
 import com.poscodx.domain.GameMessageType;
 import com.poscodx.domain.GamePlayer;
@@ -38,22 +39,30 @@ public class GameEventService {
         GamePlayer target = game.findGamePlayerByNickname(targetName);
         target.die();
         gameInfoService.sendUsers(roomKey, type);
-        confirmGameEndAfterDeathEvent(game);
+        confirmGameEndAfterDeathEvent(game, type);
     }
     public void messageSent(String roomKey, Map<String, Object> message){
         simpMessagingTemplate.convertAndSend(getChatTopic(roomKey), message);
     }
 
-    public void confirmGameEndAfterDeathEvent(Game game){
+    public void confirmGameEndAfterDeathEvent(Game game, GameMessageType type){
         long citizenNumber = game.getAliveCitizenNumber();
         long mafiaNumber = game.getAliveMafiaNumber();
 
         if (mafiaNumber == 0){
+            game.end();
+            gameInfoService.sendUsers(game.getKey(), USER_INFO);
             simpMessagingTemplate.convertAndSend(getRoomTopic(game.getKey()), toMap(new GameMassage(END)));
-            messageSent(game.getKey(), toMap(ChatResponse.of(SYSTEM_NAME, CITIZEN_WIN)));
-        }else if(mafiaNumber == citizenNumber){
+            messageSent(game.getKey(), toMap(ChatResponse.of(SYSTEM_NAME, CITIZEN_WIN, ChatType.SYSTEM)));
+        }else if(mafiaNumber >= citizenNumber){
+            game.end();
+            gameInfoService.sendUsers(game.getKey(), USER_INFO);
             simpMessagingTemplate.convertAndSend(getRoomTopic(game.getKey()), toMap(new GameMassage(END)));
-            messageSent(game.getKey(), toMap(ChatResponse.of(SYSTEM_NAME, MAFIA_WIN)));
+            messageSent(game.getKey(), toMap(ChatResponse.of(SYSTEM_NAME, MAFIA_WIN, ChatType.SYSTEM)));
+        }else if(type == NIGHT_END){
+            messageSent(game.getKey(), toMap(ChatResponse.of(SYSTEM_NAME, "날이 밝았습니다.", ChatType.SYSTEM)));
+        }else if(type == VOTE_RESULT){
+            messageSent(game.getKey(), toMap(ChatResponse.of(SYSTEM_NAME, "밤이 시작되어 마피아가 활동합니다.", ChatType.SYSTEM)));
         }
     }
 }
