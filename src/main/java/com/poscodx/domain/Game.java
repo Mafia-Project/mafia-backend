@@ -27,6 +27,7 @@ public class Game {
     private Boolean isNightEndAble = false;
     private Boolean isStart = false;
     private Map<JobType, List<String>> nightSummary = new HashMap<>();
+    private int night = 1;
 
 
     public void addGamePlayer(GamePlayer gamePlayer) {
@@ -47,6 +48,10 @@ public class Game {
             if(player.getNickname().equals(nickName)) return player;
         }
         return null;
+    }
+
+    public void setNight(int night){
+        this.night = night;
     }
 
     public void setPsychopathAllowed(boolean psychopathAllowed) {

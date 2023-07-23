@@ -91,6 +91,7 @@ public class NightService {
         game.changeVoteResultAble(true);
         gameInfoService.sendUsers(game.getKey(), GameMessageType.NIGHT_END);
         game.clearNightSummary();
+        game.setNight(game.getNight() + 1);
         gameEventService.confirmGameEndAfterDeathEvent(game, GameMessageType.NIGHT_END);
     }
 }
