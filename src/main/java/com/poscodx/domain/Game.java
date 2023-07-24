@@ -28,6 +28,7 @@ public class Game {
     private Boolean isStart = false;
     private Map<JobType, List<String>> nightSummary = new HashMap<>();
     private int night = 1;
+    private Boolean reporterUsed = false;
 
 
     public void addGamePlayer(GamePlayer gamePlayer) {
@@ -64,6 +65,10 @@ public class Game {
 
     public void setMaximumPlayer(int maximumPlayer) {
         this.maximumPlayer = maximumPlayer;
+    }
+
+    public void setReporterUsed(boolean reporterUsed){
+        this.reporterUsed = reporterUsed;
     }
 
     public void writeNightSummary(JobType jobType, String targetNickname){
@@ -178,6 +183,8 @@ public class Game {
 
     public void end(){
         this.isVoteResultAble = false;
+        this.reporterUsed = false;
+        this.night = 1;
         for (GamePlayer gamePlayer : playerList) {
             gamePlayer.isOpen();
         }
